@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Atmel Studio Solution File, Format Version 11.00
+VisualStudioVersion = 14.0.23107.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "IMU", "IMU\IMU.cproj", "{F80E1105-62BC-423F-8DF1-CDBDEDB1BBED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F80E1105-62BC-423F-8DF1-CDBDEDB1BBED}.Debug|AVR.ActiveCfg = Debug|AVR
+		{F80E1105-62BC-423F-8DF1-CDBDEDB1BBED}.Debug|AVR.Build.0 = Debug|AVR
+		{F80E1105-62BC-423F-8DF1-CDBDEDB1BBED}.Release|AVR.ActiveCfg = Release|AVR
+		{F80E1105-62BC-423F-8DF1-CDBDEDB1BBED}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
