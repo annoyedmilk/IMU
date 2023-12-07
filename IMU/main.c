@@ -29,6 +29,7 @@
 #include "LSM9DS1Driver.h"
 #include "LSM9DS1Defines.h"
 #include "twiMaster.h"
+#include "math.h"
 
 extern void vApplicationIdleHook(void);
 void vSensorDataDisplay(void *pvParameters);
@@ -69,12 +70,25 @@ void vSensorDataDisplay(void *pvParameters)
 	(void) pvParameters;
 	int16_t ax, ay, az; // Variables for acceleration data
 	int16_t mx, my, mz; // Variables for magnetometer data
+	float temperature;  // Variable for temperature data
+
+	// Variables to store previous values
+	int16_t prev_ax = 0, prev_ay = 0, prev_az = 0;
+	int16_t prev_mx = 0, prev_my = 0, prev_mz = 0;
+	float prev_temperature = 0;
+	bool displayUpdateRequired = false;
 
 	for (;;)
 	{
 		// Read temperature data
 		readTempData();
-		float temperature = getTemperatureData(); // Fetch temperature from LSM9DS1 sensor
+		temperature = getTemperatureData(); // Fetch temperature from LSM9DS1 sensor
+
+		// Update temperature display only if the change is more than 0.1 degree
+		if (fabs(temperature - prev_temperature) > 0.1) {
+			prev_temperature = temperature;
+			displayUpdateRequired = true;
+		}
 
 		// Read acceleration data
 		readACCData();
@@ -88,12 +102,24 @@ void vSensorDataDisplay(void *pvParameters)
 		my = getMagData(Y_AXIS); // Fetch Y-axis magnetometer data
 		mz = getMagData(Z_AXIS); // Fetch Z-axis magnetometer data
 
-		// Clear the display and show the data
-		vDisplayClear();
-		vDisplayWriteStringAtPos(0,0,"Temp: %f C", temperature);
-		vDisplayWriteStringAtPos(1,0,"Acc/Mag X: %d / %d", ax, mx);
-		vDisplayWriteStringAtPos(2,0,"Acc/Mag Y: %d / %d", ay, my);
-		vDisplayWriteStringAtPos(3,0,"Acc/Mag Z: %d / %d", az, mz);
+		// Update acceleration/magnetometer display only if the change is more than 5
+		if (abs(ax - prev_ax) > 5 || abs(ay - prev_ay) > 5 || abs(az - prev_az) > 5 ||
+		abs(mx - prev_mx) > 5 || abs(my - prev_my) > 5 || abs(mz - prev_mz) > 5) {
+
+			// Update the previous values
+			prev_ax = ax; prev_ay = ay; prev_az = az;
+			prev_mx = mx; prev_my = my; prev_mz = mz;
+			displayUpdateRequired = true;
+		}
+
+		if (displayUpdateRequired) {
+			vDisplayClear();
+			vDisplayWriteStringAtPos(0,0,"Temp: %f C", prev_temperature);
+			vDisplayWriteStringAtPos(1,0,"Acc/Mag X: %d / %d", prev_ax, prev_mx);
+			vDisplayWriteStringAtPos(2,0,"Acc/Mag Y: %d / %d", prev_ay, prev_my);
+			vDisplayWriteStringAtPos(3,0,"Acc/Mag Z: %d / %d", prev_az, prev_mz);
+			displayUpdateRequired = false;
+		}
 
 		// Wait for 1 second before updating again
 		vTaskDelay(1000 / portTICK_RATE_MS);
