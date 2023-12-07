@@ -2,20 +2,24 @@
  * LSM9DS1Driver.h
  *
  * Created: 15.05.2017 10:32:45
- *  Author: mburger
+ * Author: mburger
+ * Modified by Annoyedmilk
+ *
  */ 
-
 
 #ifndef LSM9DS1DRIVER_H_
 #define LSM9DS1DRIVER_H_
 
-#define X_AXIS		0x00
-#define Y_AXIS		0x01
-#define Z_AXIS		0x02
+// Axis constants
+#define X_AXIS      0x00
+#define Y_AXIS      0x01
+#define Z_AXIS      0x02
 
-#define GYROACCADDRESS	0xD4
-#define MAGADDRESS		0x38
+// I2C addresses
+#define GYROACCADDRESS  0xD4
+#define MAGADDRESS      0x38
 
+// Function prototypes
 void LSM9DS1Init(void);
 void readACCData(void);
 void readGyroData(void);

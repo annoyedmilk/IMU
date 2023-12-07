@@ -2,20 +2,23 @@
  * twiMaster.h
  *
  * Created: 04.12.2017 23:32:36
- *  Author: Martin Burger
+ * Author: Martin Burger
+ * Modified by Annoyedmilk
+ *
  */ 
-
 
 #ifndef TWIMASTER_H_
 #define TWIMASTER_H_
 
-typedef enum i2cCmd_Tag{
-	NOACT = 0,
-	START = 1,
-	BYTEREC = 2,
-	STOP = 3
-}i2cCmd_t;
+// Enum to represent I2C commands
+typedef enum i2cCmd_Tag {
+    NOACT = 0,
+    START = 1,
+    BYTEREC = 2,
+    STOP = 3
+} i2cCmd_t;
 
+// Function prototypes for I2C operations
 void initI2C(void);
 void i2cRead(uint8_t add, uint8_t reg, uint8_t n, uint8_t* data);
 uint8_t i2cReadByte(uint8_t add, uint8_t reg);
