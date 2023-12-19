@@ -84,10 +84,10 @@ void vSensorDataDisplay(void *pvParameters)
 	float mx, my, mz; // Magnetometer in µT
 	
 	// Display buffer strings
+	char displayRow0[21];
 	char displayRow1[21];
 	char displayRow2[21];
 	char displayRow3[21];
-	char displayRow4[21];
 
 	// Infinite loop for continuous data display
 	for (;;)
@@ -135,16 +135,16 @@ void vSensorDataDisplay(void *pvParameters)
 		vDisplayClear();
 
 		// Preparing display strings with sensor data
-		sprintf(displayRow1, "Temp: %.2f C", temperature);
-		sprintf(displayRow2, "x%.1f y%.1f z%.1f r/s", gx, gy, gz);
-		sprintf(displayRow3, "x%.1f y%.1f z%.1f g", ax, ay, az);
-		sprintf(displayRow4, "x%.1f y%.1f z%.1f uT", mx, my, mz);
+		sprintf(displayRow0, "Temp: %.2f C", temperature);
+		sprintf(displayRow1, "x%.0f y%.0f z%.0f r/s", gx, gy, gz);
+		sprintf(displayRow2, "x%.0f y%.0f z%.0f g", ax, ay, az);
+		sprintf(displayRow3, "x%.0f y%.0f z%.0f uT", mx, my, mz);
 
 		// Writing data to display
-		vDisplayWriteStringAtPos(0, 0, displayRow1);
-		vDisplayWriteStringAtPos(1, 0, displayRow2);
-		vDisplayWriteStringAtPos(2, 0, displayRow3);
-		vDisplayWriteStringAtPos(3, 0, displayRow4);
+		vDisplayWriteStringAtPos(0, 0, displayRow0);
+		vDisplayWriteStringAtPos(1, 0, displayRow1);
+		vDisplayWriteStringAtPos(2, 0, displayRow2);
+		vDisplayWriteStringAtPos(3, 0, displayRow3);
 
 		// Delay for 1 second before refreshing the display
 		vTaskDelay(1000 / portTICK_RATE_MS);

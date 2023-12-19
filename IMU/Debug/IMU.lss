@@ -5411,7 +5411,7 @@ void vSensorDataDisplay(void *pvParameters)
     2a6a:	0e 94 8d 1c 	call	0x391a	; 0x391a <vDisplayClear>
 
 		// Preparing display strings with sensor data
-		sprintf(displayRow1, "Temp: %.2f C", temperature);
+		sprintf(displayRow0, "Temp: %.2f C", temperature);
     2a6e:	6b 96       	adiw	r28, 0x1b	; 27
     2a70:	3f ad       	ldd	r19, Y+63	; 0x3f
     2a72:	6b 97       	sbiw	r28, 0x1b	; 27
@@ -5438,7 +5438,7 @@ void vSensorDataDisplay(void *pvParameters)
     2a9c:	9f 93       	push	r25
     2a9e:	8f 93       	push	r24
     2aa0:	0e 94 6a 24 	call	0x48d4	; 0x48d4 <sprintf>
-		sprintf(displayRow2, "x%.1f y%.1f z%.1f r/s", gx, gy, gz);
+		sprintf(displayRow1, "x%.0f y%.0f z%.0f r/s", gx, gy, gz);
     2aa4:	0f 93       	push	r16
     2aa6:	1f 93       	push	r17
     2aa8:	ff 92       	push	r15
@@ -5486,7 +5486,7 @@ void vSensorDataDisplay(void *pvParameters)
     2afc:	ff 92       	push	r15
     2afe:	ef 92       	push	r14
     2b00:	0e 94 6a 24 	call	0x48d4	; 0x48d4 <sprintf>
-		sprintf(displayRow3, "x%.1f y%.1f z%.1f g", ax, ay, az);
+		sprintf(displayRow2, "x%.0f y%.0f z%.0f g", ax, ay, az);
     2b04:	a7 96       	adiw	r28, 0x27	; 39
     2b06:	2f ad       	ldd	r18, Y+63	; 0x3f
     2b08:	a7 97       	sbiw	r28, 0x27	; 39
@@ -5545,7 +5545,7 @@ void vSensorDataDisplay(void *pvParameters)
     2b72:	1f 93       	push	r17
     2b74:	0f 93       	push	r16
     2b76:	0e 94 6a 24 	call	0x48d4	; 0x48d4 <sprintf>
-		sprintf(displayRow4, "x%.1f y%.1f z%.1f uT", mx, my, mz);
+		sprintf(displayRow3, "x%.0f y%.0f z%.0f uT", mx, my, mz);
     2b7a:	cd bf       	out	0x3d, r28	; 61
     2b7c:	de bf       	out	0x3e, r29	; 62
     2b7e:	2f 92       	push	r2
@@ -5579,7 +5579,7 @@ void vSensorDataDisplay(void *pvParameters)
     2bb6:	0e 94 6a 24 	call	0x48d4	; 0x48d4 <sprintf>
 
 		// Writing data to display
-		vDisplayWriteStringAtPos(0, 0, displayRow1);
+		vDisplayWriteStringAtPos(0, 0, displayRow0);
     2bba:	df 92       	push	r13
     2bbc:	cf 92       	push	r12
     2bbe:	1f 92       	push	r1
@@ -5587,7 +5587,7 @@ void vSensorDataDisplay(void *pvParameters)
     2bc2:	1f 92       	push	r1
     2bc4:	1f 92       	push	r1
     2bc6:	0e 94 98 1c 	call	0x3930	; 0x3930 <vDisplayWriteStringAtPos>
-		vDisplayWriteStringAtPos(1, 0, displayRow2);
+		vDisplayWriteStringAtPos(1, 0, displayRow1);
     2bca:	ff 92       	push	r15
     2bcc:	ef 92       	push	r14
     2bce:	1f 92       	push	r1
@@ -5596,7 +5596,7 @@ void vSensorDataDisplay(void *pvParameters)
     2bd4:	81 e0       	ldi	r24, 0x01	; 1
     2bd6:	8f 93       	push	r24
     2bd8:	0e 94 98 1c 	call	0x3930	; 0x3930 <vDisplayWriteStringAtPos>
-		vDisplayWriteStringAtPos(2, 0, displayRow3);
+		vDisplayWriteStringAtPos(2, 0, displayRow2);
     2bdc:	1f 93       	push	r17
     2bde:	0f 93       	push	r16
     2be0:	1f 92       	push	r1
@@ -5605,7 +5605,7 @@ void vSensorDataDisplay(void *pvParameters)
     2be6:	82 e0       	ldi	r24, 0x02	; 2
     2be8:	8f 93       	push	r24
     2bea:	0e 94 98 1c 	call	0x3930	; 0x3930 <vDisplayWriteStringAtPos>
-		vDisplayWriteStringAtPos(3, 0, displayRow4);
+		vDisplayWriteStringAtPos(3, 0, displayRow3);
     2bee:	cd bf       	out	0x3d, r28	; 61
     2bf0:	de bf       	out	0x3e, r29	; 62
     2bf2:	bf 92       	push	r11
