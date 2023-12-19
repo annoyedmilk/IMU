@@ -30,6 +30,8 @@
 #include "LSM9DS1Defines.h"
 #include "twiMaster.h"
 #include "math.h"
+#include "string.h"
+#include "stdio.h"
 
 extern void vApplicationIdleHook(void);
 void vSensorDataDisplay(void *pvParameters);
@@ -50,7 +52,7 @@ int main(void)
 	// Create the sensor data display task
 	xTaskCreate(vSensorDataDisplay,
 	(const char *) "SensorDataDisplay",
-	configMINIMAL_STACK_SIZE + 10,
+	configMINIMAL_STACK_SIZE + 200,
 	NULL,
 	1,
 	&sensorDataTask);
@@ -65,63 +67,86 @@ int main(void)
 	return 0;
 }
 
+// Function to display sensor data
 void vSensorDataDisplay(void *pvParameters)
 {
-	(void) pvParameters;
-	int16_t ax, ay, az; // Variables for acceleration data
-	int16_t mx, my, mz; // Variables for magnetometer data
-	float temperature;  // Variable for temperature data
+	(void)pvParameters; // Discard the unused parameter
 
-	// Variables to store previous values
-	int16_t prev_ax = 0, prev_ay = 0, prev_az = 0;
-	int16_t prev_mx = 0, prev_my = 0, prev_mz = 0;
-	float prev_temperature = 0;
-	bool displayUpdateRequired = false;
+	// Declaration of variables for raw sensor data
+	int16_t raw_ax, raw_ay, raw_az; // Raw acceleration data
+	int16_t raw_gx, raw_gy, raw_gz; // Raw gyro data
+	int16_t raw_mx, raw_my, raw_mz; // Raw magnetometer data
+	float temperature;              // Temperature data
 
+	// Variables for processed sensor data
+	float ax, ay, az; // Acceleration in g
+	float gx, gy, gz; // Gyro in degrees/sec
+	float mx, my, mz; // Magnetometer in µT
+	
+	// Display buffer strings
+	char displayRow1[21];
+	char displayRow2[21];
+	char displayRow3[21];
+	char displayRow4[21];
+
+	// Infinite loop for continuous data display
 	for (;;)
 	{
-		// Read temperature data
+		// Reading temperature data
 		readTempData();
-		temperature = getTemperatureData(); // Fetch temperature from LSM9DS1 sensor
+		temperature = getTemperatureData(); // Fetch and store temperature
 
-		// Update temperature display only if the change is more than 0.1 degree
-		if (fabs(temperature - prev_temperature) > 0.1) {
-			prev_temperature = temperature;
-			displayUpdateRequired = true;
-		}
+		// Reading gyro data
+		readGyroData();
+		raw_gx = getGyroData(X_AXIS);
+		raw_gy = getGyroData(Y_AXIS);
+		raw_gz = getGyroData(Z_AXIS);
 
-		// Read acceleration data
+		// Reading accelerometer data
 		readACCData();
-		ax = getACCData(X_AXIS); // Fetch X-axis acceleration
-		ay = getACCData(Y_AXIS); // Fetch Y-axis acceleration
-		az = getACCData(Z_AXIS); // Fetch Z-axis acceleration
+		raw_ax = getACCData(X_AXIS);
+		raw_ay = getACCData(Y_AXIS);
+		raw_az = getACCData(Z_AXIS);
 
-		// Read magnetometer data
+		// Reading magnetometer data
 		readMagData();
-		mx = getMagData(X_AXIS); // Fetch X-axis magnetometer data
-		my = getMagData(Y_AXIS); // Fetch Y-axis magnetometer data
-		mz = getMagData(Z_AXIS); // Fetch Z-axis magnetometer data
+		raw_mx = getMagData(X_AXIS);
+		raw_my = getMagData(Y_AXIS);
+		raw_mz = getMagData(Z_AXIS);
 
-		// Update acceleration/magnetometer display only if the change is more than 5
-		if (abs(ax - prev_ax) > 5 || abs(ay - prev_ay) > 5 || abs(az - prev_az) > 5 ||
-		abs(mx - prev_mx) > 5 || abs(my - prev_my) > 5 || abs(mz - prev_mz) > 5) {
+		// Converting raw data to units for LSM9DS1 with specific ranges
 
-			// Update the previous values
-			prev_ax = ax; prev_ay = ay; prev_az = az;
-			prev_mx = mx; prev_my = my; prev_mz = mz;
-			displayUpdateRequired = true;
-		}
+		// Accelerometer full-scale range ±2g, so the sensitivity is 0.061 mg/LSB
+		ax = raw_ax * 2.0 / 32768.0; // Convert to g
+		ay = raw_ay * 2.0 / 32768.0;
+		az = raw_az * 2.0 / 32768.0;
 
-		if (displayUpdateRequired) {
-			vDisplayClear();
-			vDisplayWriteStringAtPos(0,0,"Temp: %f C", prev_temperature);
-			vDisplayWriteStringAtPos(1,0,"Acc/Mag X: %d / %d", prev_ax, prev_mx);
-			vDisplayWriteStringAtPos(2,0,"Acc/Mag Y: %d / %d", prev_ay, prev_my);
-			vDisplayWriteStringAtPos(3,0,"Acc/Mag Z: %d / %d", prev_az, prev_mz);
-			displayUpdateRequired = false;
-		}
+		// Gyroscope full-scale range ±245 degrees/sec, so the sensitivity is 8.75 mdps/LSB
+		gx = raw_gx * 245.0 / 32768.0; // Convert to degrees/sec
+		gy = raw_gy * 245.0 / 32768.0;
+		gz = raw_gz * 245.0 / 32768.0;
 
-		// Wait for 1 second before updating again
+		// Magnetometer full-scale range ±4 gauss, so the sensitivity is 0.14 µT/LSB
+		mx = raw_mx * 4.0 * 100.0 / 32768.0; // Convert to µT
+		my = raw_my * 4.0 * 100.0 / 32768.0;
+		mz = raw_mz * 4.0 * 100.0 / 32768.0;
+
+		// Clearing the display before showing new data
+		vDisplayClear();
+
+		// Preparing display strings with sensor data
+		sprintf(displayRow1, "Temp: %.2f C", temperature);
+		sprintf(displayRow2, "x%.1f y%.1f z%.1f r/s", gx, gy, gz);
+		sprintf(displayRow3, "x%.1f y%.1f z%.1f g", ax, ay, az);
+		sprintf(displayRow4, "x%.1f y%.1f z%.1f uT", mx, my, mz);
+
+		// Writing data to display
+		vDisplayWriteStringAtPos(0, 0, displayRow1);
+		vDisplayWriteStringAtPos(1, 0, displayRow2);
+		vDisplayWriteStringAtPos(2, 0, displayRow3);
+		vDisplayWriteStringAtPos(3, 0, displayRow4);
+
+		// Delay for 1 second before refreshing the display
 		vTaskDelay(1000 / portTICK_RATE_MS);
 	}
 }
