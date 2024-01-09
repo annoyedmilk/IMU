@@ -116,20 +116,20 @@ void vSensorDataDisplay(void *pvParameters)
 
 		// Converting raw data to units for LSM9DS1 with specific ranges
 
-		// Accelerometer full-scale range ±2g, so the sensitivity is 0.061 mg/LSB
-		ax = raw_ax * 2.0 / 32768.0; // Convert to g
-		ay = raw_ay * 2.0 / 32768.0;
-		az = raw_az * 2.0 / 32768.0;
+		// Accelerometer full-scale range ±2g, sensitivity 0.061 mg/LSB
+		ax = raw_ax * 0.061 / 1000.0; // Convert to g
+		ay = raw_ay * 0.061 / 1000.0;
+		az = raw_az * 0.061 / 1000.0;
 
-		// Gyroscope full-scale range ±245 degrees/sec, so the sensitivity is 8.75 mdps/LSB
-		gx = raw_gx * 245.0 / 32768.0; // Convert to degrees/sec
-		gy = raw_gy * 245.0 / 32768.0;
-		gz = raw_gz * 245.0 / 32768.0;
+		// Gyroscope full-scale range ±245 degrees/sec, sensitivity 8.75 mdps/LSB
+		gx = raw_gx * 8.75 / 1000.0; // Convert to degrees/sec
+		gy = raw_gy * 8.75 / 1000.0;
+		gz = raw_gz * 8.75 / 1000.0;
 
-		// Magnetometer full-scale range ±4 gauss, so the sensitivity is 0.14 µT/LSB
-		mx = raw_mx * 4.0 * 100.0 / 32768.0; // Convert to µT
-		my = raw_my * 4.0 * 100.0 / 32768.0;
-		mz = raw_mz * 4.0 * 100.0 / 32768.0;
+		// Magnetometer full-scale range ±4 gauss, sensitivity 0.14 µT/LSB
+		mx = raw_mx * 0.14; // Convert to µT
+		my = raw_my * 0.14;
+		mz = raw_mz * 0.14;
 
 		// Clearing the display before showing new data
 		vDisplayClear();

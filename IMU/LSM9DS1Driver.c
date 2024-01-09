@@ -79,15 +79,9 @@ void readTempData(void) {
 	uint8_t temp[2];
 	int16_t tempValue = 0;
 	i2cRead(GYROACCADDRESS, OUT_TEMP_L, 2, temp);
-	tempValue = (((int16_t) temp[1] << 8) | temp[0]) >> 4;
-	
-	if (tempValue & 0x0800) {
-		tempValue |= 0xF000;
-	}
-	
-	temperature = 21.5 + ((float)tempValue / 16);
+	tempValue = (((int16_t) temp[1] << 12) | temp[0] << 4 ) >> 4;
+	temperature = ((float)tempValue / 16) + 25;
 }
-
 
 int16_t getGyroData(int axis) {
     switch(axis) {
@@ -135,5 +129,5 @@ int16_t getMagData(int axis) {
 }
 
 float getTemperatureData() {
-    return temperature;
+	return temperature;
 }
